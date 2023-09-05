@@ -28,11 +28,11 @@
 
 <body>
 
-    @include('website.layouts.header')
+    <x-header></x-header>
 
     @yield('content')
 
-    @include('website.layouts.footer')
+    <x-footer></x-footer>
     <script src="{{ asset('website/js/jquery-1.11.0.min.js') }}"></script>
     <script src="{{ asset('website/js/plugins.js') }}"></script>
     <script src="{{ asset('website/js/script.js') }}"></script>

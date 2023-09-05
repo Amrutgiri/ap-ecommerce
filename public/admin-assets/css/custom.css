@@ -1,0 +1,63 @@
+.primary-red {
+	color: #F94A4A;
+}
+
+.bg-primary-red {
+	background-color: #F94A4A;
+}
+
+.bg-primary-green {
+	background-color: #61D06A;
+}
+
+.bg-primary-orange {
+	background-color: #FA8128;
+}
+
+.loading-div-img{
+	background-color: #ced4da;
+    height: 130px;
+    border-radius: 50%;
+	margin: auto;
+  	width: 50%;
+}
+
+.loading-div-line{
+	background-color: #ced4da;
+    height: 15px;
+    margin-top: 7.5px;
+}
+
+.loading-div-line-half{
+	background-color: #ced4da;
+    height: 15px;
+    margin-top: 7.5px;
+	width: 50%;
+    margin: auto;
+}
+.loading-div-item{
+	overflow: hidden;
+    position: relative;
+	box-sizing: border-box;
+}
+.loading-div-item:before{
+	-webkit-animation: ph-animation .8s linear infinite;
+	animation: ph-animation .8s linear infinite;
+	background: linear-gradient(90deg,hsla(0,0%,100%,0) 46%,hsla(0,0%,100%,.35) 50%,hsla(0,0%,100%,0) 54%) 50% 50%;
+	bottom: 0;
+	content: " ";
+	left: 50%;
+	margin-left: -250%;
+	pointer-events: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 500%;
+	z-index: 1;
+}
+
+@-webkit-keyframes ph-animation{0%{transform:translate3d(-30%,0,0)}to{transform:translate3d(30%,0,0)}}@keyframes ph-animation{0%{transform:translate3d(-30%,0,0)}to{transform:translate3d(30%,0,0)}}
+
+input[type=search]::-webkit-search-cancel-button{   
+	cursor: pointer;
+}
