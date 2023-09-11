@@ -50,10 +50,7 @@ $(document).ready(function () {
 			}
 		}
 	});
-	if (oldStateId) {
-		getCities(oldStateId);
-		$('#state_id').trigger('change.select2');
-	}
+
 
 	var date = new Date();
 	date.setFullYear(date.getFullYear() - 18);
@@ -66,48 +63,4 @@ $(document).ready(function () {
 	});
 });
 
-var getCitiesAjax = null;
-function getCities(stateId) {
-	$("#city_id").html('');
-	getCitiesAjax = $.ajax({
-		url: getCitiesUrl,
-		type: "POST",
-		data: {
-			state_id: stateId,
-			_token: csrfToken
-		},
-		dataType: 'json',
-		beforeSend: function() {
-			if(getCitiesAjax != null) {
-				getCitiesAjax.abort();
-			}
-		},
-		success: function (res) {
-			$('#city_id').html('<option value="">Select a city</option>');
-			$.each(res, function (key, value) {
-				if (value.id == oldCitiesId) {
-					$("#city_id").append('<option value="' + value.id + '" selected>' + value.name + '</option>');
-				} else {
-					$("#city_id").append('<option value="' + value.id + '">' + value.name + '</option>');
-				}
-			});
-		},
-		error: function (jqXHR, ajaxOptions, thrownError) {
-			if (jqXHR.status == 401 || jqXHR.status == 419) {
-				noData = true;
-				Swal.fire({
-					title: "Session Expired",
-					text: "You'll be take to the login page",
-					icon: "warning",
-					confirmButtonText: "Ok",
-					allowOutsideClick: false,
-					customClass: {
-						confirmButton: "btn btn-sm btn-success",
-					},
-				}).then(function (result) {
-					location.reload();
-				});
-			}
-		}
-	});
-}
+

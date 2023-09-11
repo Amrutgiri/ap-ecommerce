@@ -38,17 +38,16 @@ Route::group(['prefix' => 'admin'], function () {
         /* Users Route */
         Route::post('/user/list/data', [UserController::class, 'listdata'])->name('admin.user.listdata');
         Route::post('/user/status/change/{id}', [UserController::class, 'statusChange'])->name('admin.user.status.change');
-        Route::get('/user/address-book/{id}', [UserController::class, 'addressBook'])->name('admin.user.address.book');
-        Route::get('/user/booking/list/{user_id}', [UserController::class, 'bookingList'])->name('admin.user.booking.list');
-        Route::post('/user/booking/list/data', [UserController::class, 'fetchBookingList'])->name('admin.user.booking.listdata');
-        Route::get('/user/favorite/fixr/{id}', [UserController::class, 'favoriteList'])->name('admin.user.favorite.fixr.list');
         Route::get('/user/rating-review/{id}', [UserController::class, 'ratingReview'])->name('admin.user.ratingreview.details');
         Route::post('/user/rating-review/listdata/{id}', [UserController::class, 'ratingReviewListdata'])->name('admin.user.ratingreview.listdata');
         Route::delete('/user/rating-review/destroy/{id}', [UserController::class, 'ratingReviewDestroy'])->name('admin.user.ratingreview.destroy');
+        Route::put('/user/update/{$id}', [UserController::class, 'update'])->name('admin.user.update');
         Route::resource('users', UserController::class)->names([
             'index' => 'admin.user.list',
+            'create' => 'admin.user.create',
+            'store' => 'admin.user.store',
             'edit' => 'admin.user.edit',
-            'update' => 'admin.user.update',
+            // 'update' => 'admin.user.update',
             'show' => 'admin.user.show',
             'destroy' => 'admin.user.destroy',
         ]);

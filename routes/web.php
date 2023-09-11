@@ -20,4 +20,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/',[WebsiteController::class,'index'])->name('home');
+Route::get('/', [WebsiteController::class, 'index'])->name('home');
+
+Route::get('/profile', [WebsiteController::class, 'userProfile'])->name('profile');
+Route::post('/user/profile/update/{id}', [WebsiteController::class, 'updateProfile'])->name('user.update.profile');

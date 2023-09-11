@@ -60,7 +60,7 @@
                                 @endif
                             @else
                                 <li style="margin-top: 7px;">
-                                    <a href="login.html" class="text-dark text-decoration-none h6">
+                                    <a href="{{ route('profile') }}" class="text-dark text-decoration-none h6">
                                         <i class="fa-solid fa-user me-2"></i>{{ Auth::user()->full_name }}
                                     </a>
                                 </li>

@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\Website;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Traits\ImageUploadTrait;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Website\User\UserUpdateRequest;
 
 class WebsiteController extends Controller
 {
+    use ImageUploadTrait;
     /**
      * Display a listing of the resource.
      */
@@ -14,7 +20,22 @@ class WebsiteController extends Controller
     {
         return view('home');
     }
+    public function userProfile()
+    {
+        $user = Auth::user();
+        return view('website.user.profile', [
+            'user' => $user,
+        ]);
+    }
+    public function updateProfile(User $user, UserUpdateRequest $request)
+    {
+        $userArray = $request->safe()->all();
 
+
+        $user->update($userArray);
+
+        return redirect(route('profile'))->with('success', "Profile Updated Successfully");
+    }
     /**
      * Show the form for creating a new resource.
      */

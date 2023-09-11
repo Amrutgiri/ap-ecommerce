@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers\Admin\user;
 
+use Throwable;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\Admin\User\UserCreateRequest;
+use App\Http\Requests\Admin\User\UserUpdateRequest;
 
 class UserController extends Controller
 {
@@ -102,16 +110,56 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.user.create', [
+            'title' => 'User Create',
+            'breadcrumb' => array(
+                array('title' => 'Users', 'link' => route('admin.user.list'))
+            )
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserCreateRequest $request)
     {
-        //
+        try {
+
+            $userArray = $request->safe()->all();
+
+            dd($userArray);
+
+            $userArray['full_name'] = Str::title($request->full_name);
+            $userArray['status'] = '1';
+            if ($userArray['password'] != '') {
+                $userArray['password'] = Hash::make($userArray['password']);
+            }
+            $userArray['phone'] = $request->phone;
+            $userArray['date_of_birth'] = $request->dateOfBirth;
+            $userArray['email'] = $request->email;
+            $userArray['address'] = $request->address;
+
+            $user = new User();
+            $user = $user->create($userArray);
+            if ($user) {
+
+                $file = $request->file('avatar');
+                if ($file) {
+                    $path = $this->imageUpload($file, 'user');
+                    $user->profile = $path;
+                    $user->save();
+                }
+                Session::flash('alert-success', __('messages.admin.user_created_succ'));
+            } else {
+                Session::flash('alert-danger', __('messages.admin.errors.something_went_wrong'));
+            }
+            return redirect(route('admin.user.list'));
+        } catch (Throwable $exception) {
+            Session::flash('alert-danger', $exception->getMessage());
+            return redirect(route('admin.user.list'));
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -124,24 +172,108 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+
+        return view('admin.user.edit', [
+            'title' => 'Edit User',
+            'user' => $user,
+            'breadcrumb' => array(
+                array('title' => 'Users', 'link' => route('admin.user.list'))
+            )
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserUpdateRequest $request, $id)
     {
-        //
+
+        try {
+
+            $userArray = $request->safe()->all();
+            dd($userArray);
+            $userArray['full_name'] = Str::title($request->full_name);
+            $dateOfBirth = $request->date_of_birth;
+            $userArray['date_of_birth'] = ($dateOfBirth) ? $this->dateFormat($dateOfBirth, "Y-m-d") : '';
+            $userArray['phone'] = $request->phone;
+
+
+            $file = $request->file('profile');
+            if ($request->avatar_remove == 1) {
+                if ($user->profile && Storage::exists($user->profile)) {
+                    $this->imageDelete($user->profile);
+                }
+                $userArray['profile'] = NULL;
+            }
+            if ($file) {
+                if ($user->profile && Storage::exists($user->profile)) {
+                    $this->imageDelete($user->profile);
+                }
+                $path = $this->imageUpload($file, 'user');
+                $userArray['profile'] = $path;
+            }
+
+            $userArray['address'] = $request->address;
+
+            if ($user->update($userArray)) {
+                Session::flash('alert-success', __('messages.admin.user_updated_succ'));
+            } else {
+                Session::flash('alert-danger', __('messages.admin.errors.something_went_wrong'));
+            }
+            return redirect(route('admin.user.list'));
+        } catch (Throwable $exception) {
+            Session::flash('alert-danger', $exception->getMessage());
+            return redirect(route('admin.user.list'));
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user, Request $request)
     {
-        //
+        try {
+            if ($user->profile && Storage::exists($user->profile)) {
+                $this->imageDelete($user->profile);
+            }
+            if ($user->delete()) {
+                // Session::flash('alert-success', __('messages.admin.user_deleted_succ'));
+                return response()->json([
+                    'state' => true,
+                    'message' => __('messages.admin.user_deleted_succ'),
+                ]);
+            }
+            // return redirect(route('admin.user.list'));
+        } catch (Throwable $exception) {
+            return response()->json([
+                'state' => false,
+                'message' => $exception->getMessage(),
+            ]);
+        }
+    }
+    public function statusChange(Request $request, $id)
+    {
+        try {
+            $user = User::find($id);
+            if ($request->status == '1') {
+                $status = '0';
+            } else {
+                $status = '1';
+            }
+            $user->status = $status;
+            $user->save();
+            return response()->json([
+                'state' => true,
+                'message' => 'Status Changes Successfully.',
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'state' => false,
+                'message' => $exception->getMessage(),
+            ]);
+        }
     }
 }
